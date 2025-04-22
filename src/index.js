@@ -18,8 +18,9 @@ connectDB().then(() => {
 app.use("/", userRoute);
 
 app.use((err, req, res, next) => {
+  
   res.json({
     success: false,
-    message: err || "something went wrong",
+    message: err.message || "something went wrong",
   });
 });
