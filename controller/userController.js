@@ -37,6 +37,7 @@ export const signUp = async (req, res, next) => {
     res.json({
       success: true,
       message: "user created successfully",
+      data: savedUser,
     });
   } catch (e) {
     next(e);
@@ -66,6 +67,7 @@ export const login = async (req, res, next) => {
     res.json({
       success: true,
       message: "user login successfull",
+      data:user
     });
   } catch (e) {
     next(e);
@@ -108,6 +110,32 @@ export const authenticateUser = async (req, res, next) => {
     res.json({
       success: true,
       message: "user authentication succcessfull",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getUserInfo = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      throw new Error("Invalid token or token not found");
+    }
+
+    const decodedObj = jwt.verify(token, process.env.JWT_SECRET);
+    const { id } = decodedObj;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw new Error("no user found");
+    }
+
+    res.json({
+      success: true,
+      message: "user data fetched successfully",
+      data: user,
     });
   } catch (e) {
     next(e);
