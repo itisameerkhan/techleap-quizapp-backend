@@ -16,8 +16,6 @@ export const signUp = async (req, res, next) => {
 
     const validUser = await User.findOne({ email: email });
 
-    console.log("valid user", validUser);
-
     if (validUser) {
       throw new Error("user already exists");
     }
@@ -33,8 +31,6 @@ export const signUp = async (req, res, next) => {
     const savedUser = await user.save();
 
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET);
-
-    console.log(token);
 
     res.cookie("token", token);
 
@@ -63,11 +59,9 @@ export const login = async (req, res, next) => {
       throw new Error("Invalid Password");
     }
 
-    const token = jwt.sign(user._id, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-    res.cookie("token", token, {
-      expires: new Date(Date.now()),
-    });
+    res.cookie("token", token);
 
     res.json({
       success: true,
@@ -86,6 +80,34 @@ export const logout = async (req, res, next) => {
       success: true,
       message: "logout successfull",
     });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export const authenticateUser = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+
+    if(!token) {
+      throw new Error("invalid token");
+    }
+
+    const decodedObj = jwt.verify(token, process.env.JWT_SECRET);
+
+    const { id } = decodedObj;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw new Error("user not found");
+    }
+
+    res.json({
+      success: true,
+      message: "user authentication succcessfull",
+    });
+
   } catch (e) {
     next(e);
   }
