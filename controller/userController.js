@@ -74,7 +74,9 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    res.cookie("token", null);
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+    });
 
     res.json({
       success: true,
@@ -83,13 +85,13 @@ export const logout = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-}
+};
 
 export const authenticateUser = async (req, res, next) => {
   try {
     const token = req.cookies.token;
 
-    if(!token) {
+    if (!token) {
       throw new Error("invalid token");
     }
 
@@ -107,7 +109,6 @@ export const authenticateUser = async (req, res, next) => {
       success: true,
       message: "user authentication succcessfull",
     });
-
   } catch (e) {
     next(e);
   }
