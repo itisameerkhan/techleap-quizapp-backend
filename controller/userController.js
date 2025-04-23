@@ -1,9 +1,9 @@
 import { User } from "../models/userModel.js";
 import validator from "validator";
-import bcrypt, { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export const newUserFunction = async (req, res, next) => {
+export const signUp = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
@@ -41,6 +41,50 @@ export const newUserFunction = async (req, res, next) => {
     res.json({
       success: true,
       message: "user created successfully",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      throw new Error("no user found");
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      throw new Error("Invalid Password");
+    }
+
+    const token = jwt.sign(user._id, process.env.JWT_SECRET);
+
+    res.cookie("token", token, {
+      expires: new Date(Date.now()),
+    });
+
+    res.json({
+      success: true,
+      message: "user login successfull",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const logout = async (req, res, next) => {
+  try {
+    res.cookie("token", null);
+
+    res.json({
+      success: true,
+      message: "logout successfull",
     });
   } catch (e) {
     next(e);

@@ -1,8 +1,10 @@
 import express from "express";
-import { newUserFunction } from "../controller/userController.js";
+import { signUp, login, logout } from "../controller/userController.js";
 
 const router = express.Router();
 
-router.route("/user/new").post(newUserFunction);
- 
+router.route("/user/new").post(signUp);
+router.route("/user/login").post(login);
+router.route("/user/logout").get(logout);
+
 export default router;
