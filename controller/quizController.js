@@ -37,3 +37,19 @@ export const addQuiz = async (req, res) => {
     throw new Error("something went wrong");
   }
 };
+
+
+export const getQuiz = async (req, res, next) => {
+  try {
+    const response = await Quiz.find({});
+
+    res.json({
+      success: true, 
+      message: "data fetched successfully",
+      data: response,
+    });
+
+  } catch (e) {
+    next(e);
+  }
+};
