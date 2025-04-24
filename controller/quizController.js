@@ -38,17 +38,29 @@ export const addQuiz = async (req, res) => {
   }
 };
 
-
 export const getQuiz = async (req, res, next) => {
   try {
     const response = await Quiz.find({});
 
     res.json({
-      success: true, 
+      success: true,
       message: "data fetched successfully",
       data: response,
     });
+  } catch (e) {
+    next(e);
+  }
+};
 
+export const getQuestion = async (req, res, next) => {
+  try {
+    const questionId = req.params.questionId;
+    const question = await Quiz.findById(questionId);
+    res.json({
+      success: true,
+      message: "question fetched successfully",
+      data: question,
+    });
   } catch (e) {
     next(e);
   }
