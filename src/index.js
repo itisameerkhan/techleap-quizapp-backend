@@ -4,6 +4,7 @@ import connectDB from "../config/database.js";
 import cors from "cors";
 import userRoute from "../router/userRoute.js";
 import cookieParser from "cookie-parser";
+import quizRouter from "../router/quizRouter.js";
 
 const app = express();
 dotenv.config();
@@ -24,6 +25,7 @@ connectDB().then(() => {
 });
 
 app.use("/", userRoute);
+app.use("/",quizRouter);
 
 app.use((err, req, res, next) => {
 
