@@ -1,5 +1,6 @@
 import { Quiz } from "../models/quizModel.js";
 import { Answers } from "../models/answerModel.js";
+import { Dashboard } from "../models/DashboardModel.js";
 
 export const addQuiz = async (req, res) => {
   try {
@@ -101,6 +102,65 @@ export const getCorrectAnswer = async (req, res, next) => {
       success: true,
       message: "Answer fetched successfully",
       data: response,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const updateDashboard = async (req, res, next) => {
+  try {
+    const { marks, questionId, userId, name } = req.body;
+
+    const response = await Dashboard.findOne({
+      questionId,
+      userId,
+    });
+
+    if (response) {
+      response.marks = marks;
+      await response.save();
+    } else {
+      const dashboard = new Dashboard({
+        marks: marks,
+        questionId: questionId,
+        userId: userId,
+        name: name,
+      });
+      await dashboard.save();
+    }
+
+    res.json({
+      success: true,
+      message: "dashboard updation successfull",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getLeaderboard = async (req, res, next) => {
+  try {
+    const response = await Dashboard.find({});
+
+    const leaderboards = response.reduce((acc, item) => {
+      const { userId, marks, name } = item;
+
+      if (!acc[userId]) {
+        acc[userId] = { name, marks };
+      } else {
+        acc[userId].marks += marks;
+      }
+
+      return acc;
+    },{});
+
+    const resultArray = Object.values(leaderboards);
+
+    res.json({
+      success: true,
+      message: "leaderboard data fetched successfull",
+      data: resultArray,
     });
   } catch (e) {
     next(e);
