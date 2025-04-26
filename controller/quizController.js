@@ -65,3 +65,44 @@ export const getQuestion = async (req, res, next) => {
     next(e);
   }
 };
+
+export const getAnswers = async (req, res, next) => {
+  try {
+    const { questionId } = req.params;
+
+    const response = await Answers.findOne({ questionId: questionId });
+
+    const correctAnswers = response.answers;
+
+    let numberOfCorrect = 0;
+
+    for (let i = 0; i < 10; i++) {
+      if (correctAnswers[i] === req.body[i.toString()]) {
+        numberOfCorrect++;
+      }
+    }
+
+    res.json({
+      success: true,
+      message: "answer fetched successfull",
+      data: response.answers,
+      numberOfCorrect: numberOfCorrect,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getCorrectAnswer = async (req, res, next) => {
+  try {
+    const { questionId } = req.params;
+    const response = await Answers.findOne({ questionId: questionId });
+    res.json({
+      success: true,
+      message: "Answer fetched successfully",
+      data: response,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
