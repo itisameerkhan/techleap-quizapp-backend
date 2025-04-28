@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://anotherquizapp-lilac.vercel.app",
+    origin: "https://quizappforreal.vercel.app",
     credentials: true,
   })
 );
